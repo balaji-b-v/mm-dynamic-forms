@@ -66,18 +66,20 @@ angular.module('mm-dynamic-forms', [])
           model = null;
 
         //  Check that the required attributes are in place
-        if (angular.isDefined(attrs.ngModel) && (angular.isDefined(attrs.template) || angular.isDefined(attrs.templateUrl)) && !element.hasClass('mm-dynamic-form')) {
-          model = $parse(attrs.ngModel)($scope);
+        if ((angular.isDefined(attrs.template) || angular.isDefined(attrs.templateUrl)) && !element.hasClass('mm-dynamic-form')) {
+          // model = $parse(attrs.ngModel)($scope);
+          // console.log(model);
+          // console.log(attrs.ngModel);
           //  Grab the template. either from the template attribute, or from the URL in templateUrl
           (attrs.template ? $q.when($parse(attrs.template)($scope)) :
             $http.get(attrs.templateUrl, {cache: $templateCache}).then(function (result) {
               return result.data;
             })
           ).then(function (template) {
-            var setProperty = function (obj, props, value, lastProp, buildParent) {
-              props = props.split('.');
+            var setProperty = function (obj, props, value, lastProp, buildParent) {console.log(obj);
+              props = props.split('.');console.log(props);
               lastProp = lastProp || props.pop();
-
+// console.log(props);console.log(lastProp);
               for (var i = 0; i < props.length; i++) {
                 obj = obj[props[i]] = obj[props[i]] || {};
               }
@@ -86,9 +88,18 @@ angular.module('mm-dynamic-forms', [])
                 obj[lastProp] = value;
               }
             },
-            bracket = function (model, base) {
-              props = model.split('.');
-              return (base || props.shift()) + (props.length ? "['" + props.join("']['") + "']" : '');
+            bracket = function (model, base) {console.log(model)
+              // props = model.split('.');
+              // return (base || props.shift()) + (props.length ? "['" + props.join("']['") + "']" : '');
+              // console.log((base || props.shift()) + (props.length ? "." + props.join(".")  : ""))
+              // if(base == null){
+                return model;
+              // }
+
+              // else{
+              //   return (base || props.shift()) + (props.length ? "." + props.join(".")  : "");
+              // }
+
             },
             buildFields = function (field, id) {
              if (String(id).charAt(0) == '$') {
@@ -102,9 +113,9 @@ angular.module('mm-dynamic-forms', [])
                 if (angular.isDefined(field.label)) {angular.element(newElement).html(field.label);}
 
                 angular.forEach(field, function (val, attr) {
-                  console.log(field);
-                  console.log(val);
-                  console.log(attr);
+                  // console.log(field);
+                  // console.log(val);
+                  // console.log(attr);
                   if (["label", "type"].indexOf(attr) > -1) {
                     return;
                   }
@@ -140,14 +151,15 @@ angular.module('mm-dynamic-forms', [])
                 //  Editable fields (those that can feed models)
                 if (angular.isDefined(supported[field.type].editable) && supported[field.type].editable) {
                   // newElement.attr('name', bracket(field.model));
+                  console.log(attrs.ngModel);
                   newElement.attr('ng-model', bracket(field.model, attrs.ngModel));
                   // Build parent in case of a nested model
-                  setProperty(model, field.model, {}, null, true);
+                  setProperty(field.model, field.model, {}, null, true);
 
                   if (angular.isDefined(field.readonly)) {newElement.attr('ng-readonly', field.readonly);}
                   if (angular.isDefined(field.required)) {newElement.attr('ng-required', field.required);}
                   if (angular.isDefined(field.val)) {
-                    setProperty(model, field.model, angular.copy(field.val));
+                    setProperty(field.model, field.model, angular.copy(field.val));
                     newElement.attr('value', field.val);
                   }
                 }
@@ -176,11 +188,11 @@ angular.module('mm-dynamic-forms', [])
                 }
                 else if (field.type === 'checklist') {
                   if (angular.isDefined(field.val)) {
-                    setProperty(model, field.model, angular.copy(field.val));
+                    setProperty(field.model, field.model, angular.copy(field.val));
                   }
                   if (angular.isDefined(field.options)) {
                     if (! (angular.isDefined(model[field.model]) && angular.isObject(model[field.model]))) {
-                      setProperty(model, field.model, {});
+                      setProperty(field.model, field.model, {});
                     }
                     angular.forEach(field.options, function (option, childId) {
                       newChild = angular.element('<input type="checkbox" />');
@@ -195,7 +207,7 @@ angular.module('mm-dynamic-forms', [])
                       if (angular.isDefined(option.isOff)) {newChild.attr('ng-false-value', option.isOff);}
                       if (angular.isDefined(option.slaveTo)) {newChild.attr('ng-checked', option.slaveTo);}
                       if (angular.isDefined(option.val)) {
-                        setProperty(model, field.model, angular.copy(option.val), childId);
+                        setProperty(field.model, field.model, angular.copy(option.val), childId);
                         newChild.attr('value', option.val);
                       }
 
@@ -209,7 +221,7 @@ angular.module('mm-dynamic-forms', [])
                 }
                 else if (field.type === 'radio') {
                   if (angular.isDefined(field.val)) {
-                    setProperty(model, field.model, angular.copy(field.val));
+                    setProperty(field.model, field.model, angular.copy(field.val));
                   }
                   if (angular.isDefined(field.values)) {
                     angular.forEach(field.values, function (label, val) {
@@ -274,7 +286,7 @@ angular.module('mm-dynamic-forms', [])
                   newElement.attr('name', bracket(field.model));
                   newElement.attr('ng-model', bracket(field.model, attrs.ngModel));
                   if (angular.isDefined(field.val)) {
-                    setProperty(model, field.model, angular.copy(field.val));
+                    setProperty(field.model, field.model, angular.copy(field.val));
                     newElement.attr('value', field.val);
                   }
                 }
