@@ -1,13 +1,13 @@
-angular.module('app', ['dynform'])
+angular.module('app', ['mm-dynamic-forms'])
   .controller('AppCtrl', ['$scope', function ($scope) {
     $scope.stdFormTemplate = {
       "fieldset": {
         "type": "fieldset",
         "label": "fieldset",
         "fields": {
-          "text": {
+          "Card Name": {
             "type": "text",
-            "label": "text",
+            "label": "Card Name",
             "placeholder": "text"
           },
           "date": {
@@ -218,7 +218,20 @@ angular.module('app', ['dynform'])
       }
     };
     $scope.stdFormData = {};
-    $scope.urlFormData = {};
+    $scope.vm = {};
+    vm.searchInfo = {};
+    vm.searchInfo.first_name = '';
+    vm.searchInfo.last_name = '';
+    vm.searchInfo.email = '';
+    vm.searchInfo.mobile = '';
+    vm.searchInfo.processor_ref_id = '';
+    vm.searchInfo.user_hash_id = '';
+    vm.searchInfo.status = {
+      "pending" : "Pending",
+      "success": "Success",
+      "failed": "Failed"
+    }
+    // $scope.vm = vm;
   }])
   .filter('pretty', function() {
     return function (input) {
@@ -229,7 +242,7 @@ angular.module('app', ['dynform'])
       catch (e) {
         temp = input;
       }
-      
+
       return angular.toJson(temp, true);
     };
   });

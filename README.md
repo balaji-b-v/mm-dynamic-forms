@@ -1,7 +1,7 @@
-angular-dynamic-forms
+mm-dynamic-forms
 =====================
 
-[![Join the chat at https://gitter.im/danhunsaker/angular-dynamic-forms](https://badges.gitter.im/danhunsaker/angular-dynamic-forms.svg)](https://gitter.im/danhunsaker/angular-dynamic-forms?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Build Forms in AngularJS From Nothing But JSON
 
 Uses the MIT License.  See `LICENSE` file for details.
@@ -11,26 +11,16 @@ Installation
 ### Bower ###
 The easy way.
 
-1. `bower install angular-dynforms` (add `--save` if you want to add the dependency to your own
+1. `bower install mm-dynamic-forms` (add `--save` if you want to add the dependency to your own
     project - HIGHLY RECOMMENDED)
 
 ### Git ###
 The old way.
 
 1. Clone the project from either [GitHub][] or [BitBucket][] - whichever you prefer.
-2. Copy `dynamic-forms.js` into your project wherever your other assets reside.
+2. Copy `mm-dynamic-forms.js` into your project wherever your other assets reside.
 
-#### Name Change ####
-When registering this project with bower, I discovered that there's another project called
-[angular-dynamic-forms][wbreza] already registered there.  The project was created at the beginning
-of October 2014, long after this one, and I haven't yet worked out if there are any similarities in
-the implementation, but as I've been thinking of shortening the name of this project for a while
-anyway, I went ahead and registered it in bower with the shorter name.  I'll be changing the repo
-name on GitHub and BitBucket, too, but not for several months, to give existing users time to
-notice the addition of full bower support.  The repo will be renamed to match the name registered
-in bower, and the bower name will not change.  It is strongly recommended to use the bower method
-so you can get the latest version of this project at any given time, regardless of whether I've
-gotten around to renaming the repo.
+#### Use ####
 
 Use
 ---
@@ -40,87 +30,60 @@ As with any other [AngularJS][] module:
     you use for including scripts in your project:
 
 ```html
-    <script src="bower_components/angular-dynforms/dynamic-forms.js"></script>
+    <script src="bower_components/mm-dynamic-forms/mm-dynamic-forms.js"></script>
 ```
 
 ```javascript
-    require('angular-dynforms');
+    require('mm-dynamic-forms');
 ```
 
-* _**INTERNET EXPLORER**_: This project (as with most of Angular itself) WILL NOT work
-    properly with IE 6 or 7.  Some of the functionality can be coerced into working, but much of it
-	will simply be broken.  `radio` fields, for example, will have every member selected.  This may
-	be fixed in a future version, but as it's 2014, IE 6 and 7 are very low priorities, especially
-	with XP reaching end of life.  IE 8 will work, with a bit of extra setup (you can try this for 
-    IE 6 and 7 as well, but again, they probably won't work):
 
-```html
-    <!--[if lte IE 8]>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.1/json3.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.3.0/es5-shim.min.js"></script>
-        <script>
-            document.createElement('ng-include');
-            document.createElement('ng-pluralize');
-            document.createElement('ng-view');
-            document.createElement('ng-form');
-            document.createElement('dynamic-form');
-            
-            // Optionally these for CSS
-            document.createElement('ng:include');
-            document.createElement('ng:pluralize');
-            document.createElement('ng:view');
-            document.createElement('ng:form');
-            
-            // IE doesn't always run the bootstrap on its own...
-            $(document).ready(function() {
-              angular.bootstrap(document.documentElement);
-            });
-        </script>
-    <![endif]-->
-```
-
-* inject `dynform` as a dependency of your project.
+* inject `mmDynamicForm` as a dependency of your project.
 
 ```javascript
-    appModule = angular.module('app', ['dynform']);
+    appModule = angular.module('app', ['mmDynamicForm']);
 ```
 
-* create a [dynamic-form](#the-directive) element anywhere in your page.
+* add the [mm-dynamic-form] attribute(#the-directive) to the element anywhere in your page.
 
 ```html
-    <dynamic-form template="formTemplate"
+    <form mm-dynamic-form template="formTemplate"
         ng-model="formData"
         ng-submit="processForm()">
-    </dynamic-form>
+    </form>
 ```
 
 * populate your [template](#the-template) with a JSON array describing the form you want to create.
 
 ```javascript
     $scope.formData = {};   // JavaScript needs an object to put our form's models into.
-    
+
     $scope.formTemplate = [
         {
             "type": "text",
             "label": "First Name",
-            "model": "name.first"
+            "model": "name.first",
+            "tabindex": "1"
         },
         {
             "type": "text",
             "label": "Last Name",
-            "model": "name.last"
+            "model": "name.last",
+            "tabindex": "2"
         },
         {
             "type": "email",
             "label": "Email Address",
-            "model": "email"
+            "model": "email",
+            "tabindex": "3"
         },
         {
             "type": "submit",
-            "model": "submit"
+            "model": "submit",
+            "tabindex": "4"
         },
     ];
-    
+
     $scope.processForm = function () {
         /* Handle the form submission... */
     };
@@ -131,8 +94,8 @@ all of the things you can do with this module.
 
 The TL;DR Version
 -----------------
-### The Directive ###
-You invoke the `dynamic-form` directive using an element (`<dynamic-form></dynamic-form>`) - other
+### The Directive Attribute ###
+You invoke this directive, by adding the `mm-dynamic-form` attribute to a <form></form> element (`<form mm-dynamic-form></form>`) - other
 options (such as class, attribute, and comment) are unsupported (for now).  The directive requires
 two attributes: an [`ng-model`][], and either a `template` or a `template-url`.  The [`ng-model`][]
 will be used to generate valid [`ng-model`][] attributes for the various input controls in the
@@ -141,7 +104,7 @@ data will be available in keys of whichever model you specify here (though neste
 exception, unless you specify a key in the outer form's model as the [`ng-model`][] of the inner
 form).  **You _must_ initialize this parent model to an object, or your app will break.**
 
-If you specify a `template-url`, the `dynamic-form` directive will retrieve the form template via
+If you specify a `template-url`, the `mm-dynamic-form` directive will retrieve the form template via
 [`$http`][] and build out your form based on the response.  Currently, failure is silently ignored.
 This may change in a later release.
 
@@ -155,14 +118,14 @@ At some point in the future you will also be able to dynamically update this arr
 will automatically be reflected in the DOM.  This is currently unsupported, however, and for technical
 reasons, will likely not be supported at all for `templateUrl` arrays.
 
-Any other attributes you specify on the `dynamic-form` element are copied across to the `form` or
+Any other attributes you specify on the `mm-dynamic-form` element are copied across to the `form` or
 [`ng-form`][] element that the directive builds to replace itself with.  Similarly, any pre-existing
 contents are copied across as well, to the top of the resulting form, with the
 dynamically-specified controls below them.  This allows you to nest `dynamic-form`s inside each
 other in the same way as [`ng-form`][] (which is one reason this directive implements this
 pseudo-transclusion).
 
-The `dynamic-form` directive makes every attempt to set up the forms it generates to be valid HTML
+The `mm-dynamic-form` directive makes every attempt to set up the forms it generates to be valid HTML
 forms, complete with the ability to have their data submitted to the server by the browser's native
 form submission mechanism and still have the data in the same structure that it takes on in your
 [AngularJS][] models.  This makes it easy to implement a fallback mode in case there is a problem
@@ -523,6 +486,7 @@ what][formsupport].
 
 Acknowledgements
 ----------------
+* [Daniel Hunsaker][https://github.com/danhunsaker] for his initial work and which has been adapted here.
 * [Frank Linehan][] for leading me in [the right direction][directive].
 * [K. Scott Allen][] for the [file input directive][filedirective] and the [FileReader
     service][fileservice] adapted for use here.
@@ -534,10 +498,6 @@ Acknowledgements
 
 Alternatives
 ------------
-If this project isn't for you (it's not very mature, yet, so there are plenty of reasons it may not
-be a good fit for your projects, yet), there are some other ways to go about the same basic thing.
-They each have their own benefits and drawbacks, but I'll let their own developers speak to those,
-especially as I haven't tested any, yet.  Here are a few; let me know if you're aware of others:
 
 * [JSON Form][json-form] - A jQuery-based library for converting JSON Schemas into HTML forms;
     a mature option with many advanced features, though centered around Twitter Bootstrap.
@@ -604,6 +564,7 @@ you prefer), and submit a pull request with your contribution(s)!
 [`ng-true-value`]: http://docs.angularjs.org/api/ng.directive:input.checkbox
 
 [AngularJS]: http://angularjs.org
+[Daniel Hunsaker]: https://github.com/danhunsaker
 [Frank Linehan]: http://frank-code.com
 [K. Scott Allen]: http://odetocode.com/about/scott-allen
 [OdeToCode]: http://odetocode.com

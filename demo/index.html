@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="app" id="ng-app">
   <head>
-    <title>Angular Dynamic Forms Test</title>
+    <title>MM Dynamic Forms Test</title>
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
     <style>
       .nav,
@@ -9,33 +9,33 @@
       .carousel a {
         cursor: pointer;
       }
-      
+
       .fixed {
         position: fixed;
         margin: 0;
       }
-      
+
       [ng-cloak] {
         display: none;
       }
-      
+
       div.fixed {
         overflow-y: auto;
         height: 100%;
         margin-left: -15px;
       }
-      
+
       pre {
         margin: 1ex 0;
       }
-      
+
       form,
       ng-form {
         border: 1px solid blue;
         border-radius: 4px;
         display: block;
       }
-      
+
       fieldset {
         border: 1px solid blue;
         border-radius: 4px;
@@ -43,11 +43,11 @@
         padding: .35em .625em .75em;
         margin: 0 2px;
       }
-      
+
       legend {
         font-weight: bold;
       }
-      
+
       fieldset > legend:first-of-type {
         border: none;
         margin-bottom: auto;
@@ -55,7 +55,7 @@
         padding: inherit;
         color: blue;
       }
-      
+
       label,
       span,
       form > button,
@@ -65,14 +65,14 @@
         width: 48%;
         padding: 1ex 1em;
       }
-      
+
       label > input,
       label > select,
       label > textarea {
         float: right;
         width: 60%;
       }
-      
+
       label div > label {
         display: block;
         padding: 1ex;
@@ -88,13 +88,13 @@
         document.createElement('ng-view');
         document.createElement('ng-form');
         document.createElement('dynamic-form');
-        
+
         // Optionally these for CSS
         document.createElement('ng:include');
         document.createElement('ng:pluralize');
         document.createElement('ng:view');
         document.createElement('ng:form');
-        
+
         $(document).ready(function() {
           angular.bootstrap(document.documentElement);
         });
@@ -102,14 +102,15 @@
     <![endif]-->
   </head>
   <body ng-controller="AppCtrl" ng-cloak="">
-    <p>This demo is a really ugly example of the basic functionality of this module.  Have a look
+    <p>This demo is an example of the basic functionality of this module.  Have a look
       through the code and get a feel for how everything works.</p>
-    <dynamic-form class="col-md-8" template-url="form-template.js" ng-model="urlFormData">
-      <dynamic-form class="col-md-12" template="stdFormTemplate" ng-model="stdFormData">
-        <legend>template= test</legend>
-      </dynamic-form>
+    <form mm-dynamic-form class="col-md-8" template-url="form-template.js" ng-model="vm.searchInfo">
+
       <legend>templateUrl= test</legend>
-    </dynamic-form>
+    </form>
+    <form mm-dynamic-form class="col-md-12" template="stdFormTemplate" ng-model="stdFormData">
+        <legend>template= test</legend>
+      </form>
     <div class="col-md-4">
       <div class="fixed col-md-4">
         <pre>stdFormData: {{stdFormData | pretty}}</pre>
@@ -117,8 +118,8 @@
       </div>
     </div>
     <!-- Load scripts at the end for performance. -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
-    <script src="../dynamic-forms.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="../mm-dynamic-forms.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

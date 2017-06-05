@@ -1,12 +1,12 @@
 {
-  "name": "angular-dynforms",
-  "version": "0.0.4",
-  "homepage": "https://github.com/danhunsaker/angular-dynamic-forms",
+  "name": "mm-dynamic-forms",
+  "version": "0.0.1",
+  "homepage": "https://github.com/balaji-b-v/mm-dynamic-forms.git",
   "authors": [
-    "Daniel Hunsaker <danhunsaker@gmail.com>"
+    "Balaji Venkatesh <balaji_b_v@rediffmail.com>"
   ],
   "description": "Build Forms in AngularJS From Nothing But JSON",
-  "main": "dynamic-forms.js",
+  "main": "mm-dynamic-forms.js",
   "keywords": [
     "angular",
     "form"
