@@ -1,21 +1,22 @@
 /**
-* DynamicForms - Build Forms in AngularJS From Nothing But JSON
-* @version v0.0.1 - 2017-05-31
+* mmDynamicForms - Build ngMaterial based Forms in AngularJS From JSON config file
+* @version v0.0.2 - 2017-06-07
 * @link https://github.com/balaji-b-v/mm-dynamic-forms
 * @license MIT, http://opensource.org/licenses/MIT
 */
 
 /**
-* Dynamically build an HTML form using a JSON array/object as a template.
+* Dynamically build an Search HTML form using a JSON array/object as a template.
+* The form uses ngMaterial based tags in the form.
 *
 * @todo Properly describe this directive.
 * @param {mixed} [template] - The form template itself, as an array or object.
 * @param {string} [templateUrl] - The URL to retrieve the form template from; template overrides.
 * @param {Object} ngModel - An object in the current scope where the form data should be stored.
-* @example <form mm-dynamic-form template-url="form-template.js" ng-model="formData"></form>
+* @example <form mm-dynamic-form name="queryTransaction" ng-submit="vm.search()" autocomplete="off" template="vm.searchInfoFields">
 */
 angular.module('mm-dynamic-forms', [])
-  .directive('mmDynamicForm', ['$q', '$parse', '$http', '$templateCache', '$compile', '$document', '$timeout', function ($q, $parse, $http, $templateCache, $compile, $document, $timeout) {
+  .directive('mmDynamicForm', ['$q', '$parse', '$http', '$templateCache', '$compile', '$document', '$timeout', '$translate', function ($q, $parse, $http, $templateCache, $compile, $document, $timeout, $translate) {
     var supported = {
         //  Text-based elements
         'text': {element: 'input', type: 'text', editable: true, textBased: true},
@@ -43,12 +44,12 @@ angular.module('mm-dynamic-forms', [])
         'fieldset': {element: 'fieldset', editable: false, textBased: false},
         'radio': {element: 'div', editable: false, textBased: false},
         //  Non-editables (mostly buttons)
-        'button': {element: 'button', type: 'button', editable: false, textBased: false},
+        'button': {element: 'md-button', type: 'button', editable: false, textBased: false},
         'hidden': {element: 'input', type: 'hidden', editable: false, textBased: false},
         'image': {element: 'input', type: 'image', editable: false, textBased: false},
         'legend': {element: 'legend', editable: false, textBased: false},
-        'reset': {element: 'button', type: 'reset', editable: false, textBased: false},
-        'submit': {element: 'button', type: 'submit', editable: false, textBased: false}
+        'reset': {element: 'md-button', type: 'reset', editable: false, textBased: false},
+        'submit': {element: 'md-button', type: 'submit', editable: false, textBased: false}
       };
 
     return {
@@ -57,7 +58,7 @@ angular.module('mm-dynamic-forms', [])
       link: function ($scope, element, attrs) {
         //  Basic initialization
         var newElement = null,
-           newElementWrapper = '<md-input-container class="md-block" flex-gt-sm></md-input-container>';
+           newElementWrapper = '<md-input-container class="md-block" flex-gt-sm></md-input-container>',
           newChild = null,
           optGroups = {},
           cbAtt = '',
@@ -66,20 +67,20 @@ angular.module('mm-dynamic-forms', [])
           model = null;
 
         //  Check that the required attributes are in place
+        // dependency on ngModel attr in form element is removed.
+        // the field models are specified in the template array itself
         if ((angular.isDefined(attrs.template) || angular.isDefined(attrs.templateUrl)) && !element.hasClass('mm-dynamic-form')) {
           // model = $parse(attrs.ngModel)($scope);
-          // console.log(model);
-          // console.log(attrs.ngModel);
           //  Grab the template. either from the template attribute, or from the URL in templateUrl
           (attrs.template ? $q.when($parse(attrs.template)($scope)) :
             $http.get(attrs.templateUrl, {cache: $templateCache}).then(function (result) {
               return result.data;
             })
           ).then(function (template) {
-            var setProperty = function (obj, props, value, lastProp, buildParent) {console.log(obj);
-              props = props.split('.');console.log(props);
+           var setProperty = function (obj, props, value, lastProp, buildParent) {
+              props = props.split('.');
               lastProp = lastProp || props.pop();
-// console.log(props);console.log(lastProp);
+
               for (var i = 0; i < props.length; i++) {
                 obj = obj[props[i]] = obj[props[i]] || {};
               }
@@ -88,7 +89,8 @@ angular.module('mm-dynamic-forms', [])
                 obj[lastProp] = value;
               }
             },
-            bracket = function (model, base) {console.log(model)
+            bracket = function (model, base) {
+              //  The original implementation modified here to return just the incoming mmodel
               // props = model.split('.');
               // return (base || props.shift()) + (props.length ? "['" + props.join("']['") + "']" : '');
               // console.log((base || props.shift()) + (props.length ? "." + props.join(".")  : ""))
@@ -101,7 +103,9 @@ angular.module('mm-dynamic-forms', [])
               // }
 
             },
-            buildFields = function (field, id) {
+            buildFields = function (wrapElement, field, id) {
+              var rowElem = angular
+              // var thisObj = this;
              if (String(id).charAt(0) == '$') {
                 // Don't process keys added by Angular...  See GitHub Issue #29
                 return;
@@ -110,12 +114,9 @@ angular.module('mm-dynamic-forms', [])
 
                 //  Unsupported.  Create SPAN with field.label as contents
                 newElement = angular.element('<span></span>');
-                if (angular.isDefined(field.label)) {angular.element(newElement).html(field.label);}
+                if (angular.isDefined(field.label)) {angular.element(newElement).attr('translate', field.label);}
 
                 angular.forEach(field, function (val, attr) {
-                  // console.log(field);
-                  // console.log(val);
-                  // console.log(attr);
                   if (["label", "type"].indexOf(attr) > -1) {
                     return;
                   }
@@ -128,10 +129,8 @@ angular.module('mm-dynamic-forms', [])
                 //  Supported.  Create element (or container) according to type
                 var wrapperElem = angular.element(newElementWrapper);
                 //  colect the attributes into field.attributes array
+                //  This code kept for possible future enhancement
                 // angular.forEach(field, function (val, attr) {
-                //   console.log(field);
-                //   console.log(val);
-                //   console.log(attr);
                 //   if (["label", "type", "model"].indexOf(attr) > -1) {
                 //     return;
                 //   }else{
@@ -151,7 +150,7 @@ angular.module('mm-dynamic-forms', [])
                 //  Editable fields (those that can feed models)
                 if (angular.isDefined(supported[field.type].editable) && supported[field.type].editable) {
                   // newElement.attr('name', bracket(field.model));
-                  console.log(attrs.ngModel);
+                  // console.log(attrs.ngModel);
                   newElement.attr('ng-model', bracket(field.model, attrs.ngModel));
                   // Build parent in case of a nested model
                   setProperty(field.model, field.model, {}, null, true);
@@ -187,6 +186,7 @@ angular.module('mm-dynamic-forms', [])
                   if (angular.isDefined(field.slaveTo)) {newElement.attr('ng-checked', field.slaveTo);}
                 }
                 else if (field.type === 'checklist') {
+                  // TODO make this replacement to use ng-material based HTML tags
                   if (angular.isDefined(field.val)) {
                     setProperty(field.model, field.model, angular.copy(field.val));
                   }
@@ -220,6 +220,7 @@ angular.module('mm-dynamic-forms', [])
                   }
                 }
                 else if (field.type === 'radio') {
+                  // TODO make this replacement to use ng-material based HTML tags
                   if (angular.isDefined(field.val)) {
                     setProperty(field.model, field.model, angular.copy(field.val));
                   }
@@ -245,29 +246,41 @@ angular.module('mm-dynamic-forms', [])
                   }
                 }
                 else if (field.type === 'select') {
+                  // Handled to use ngMaterial based HTML tags
                   if (angular.isDefined(field.multiple) && field.multiple !== false) {newElement.attr('multiple', 'multiple');}
-                  if (angular.isDefined(field.empty) && field.empty !== false) {newElement.append(angular.element($document[0].createElement('option')).attr('value', '').html(field.empty));}
+                  if (angular.isDefined(field.empty) && field.empty !== false) {newElement.append(angular.element($document[0].createElement('option')).attr('value', '').html($translate.instant(field.empty)));}
 
                   if (angular.isDefined(field.autoOptions)) {
                     newElement.attr('ng-options', field.autoOptions);
                   }
                   else if (angular.isDefined(field.options)) {
-                    angular.forEach(field.options, function (option, childId) {
-                      newChild = angular.element($document[0].createElement('md-option'));
-                      newChild.attr('value', childId);
-                      if (angular.isDefined(option.disabled)) {newChild.attr('ng-disabled', option.disabled);}
-                      if (angular.isDefined(option.slaveTo)) {newChild.attr('ng-selected', option.slaveTo);}
-                      if (angular.isDefined(option.label)) {newChild.html(option.label);}
-                      if (angular.isDefined(option.group)) {
-                        if (!angular.isDefined(optGroups[option.group])) {
-                          optGroups[option.group] = angular.element($document[0].createElement('optgroup'));
-                          optGroups[option.group].attr('label', option.group);
+                    // This doesnt handle the optSubgroups
+                      newChild = angular.element($document[0].createElement('md-option')).html("{{type}}");
+                      newChild.attr('ng-repeat', "type in " + field.options);
+                      newChild.attr('ng-value', 'type');
+
+                      newElement.append(newChild);
+
+                      //  code for handling the optSubgroups
+                     /*
+                     angular.forEach(field.options, function (option, childId) {
+                        newChild = angular.element($document[0].createElement('md-option')).html("{{type}}");
+                        newChild.attr('ng-repeat', "type in " + field.options);
+                        newChild.attr('ng-value', 'type');
+                        if (angular.isDefined(option.disabled)) {newChild.attr('ng-disabled', option.disabled);}
+                        if (angular.isDefined(option.slaveTo)) {newChild.attr('ng-selected', option.slaveTo);}
+                        if (angular.isDefined(option.label)) {newChild.html($translate.instant(option.label));}
+                        if (angular.isDefined(option.group)) {
+                          if (!angular.isDefined(optGroups[option.group])) {
+                            optGroups[option.group] = angular.element($document[0].createElement('optgroup'));
+                            optGroups[option.group].attr('label', $translate.instant(option.group));
+                          }
+                          optGroups[option.group].append(newChild);
                         }
-                        optGroups[option.group].append(newChild);
-                      }
-                      else {
-                        newElement.append(newChild);
-                      }
+                        else {
+
+                          newElement.append(newChild);
+                        }
                     });
 
                     if (!angular.equals(optGroups, {})) {
@@ -275,7 +288,7 @@ angular.module('mm-dynamic-forms', [])
                         newElement.append(optGroup);
                       });
                       optGroups = {};
-                    }
+                    }*/
                   }
                 }
                 else if (field.type === 'image') {
@@ -301,6 +314,8 @@ angular.module('mm-dynamic-forms', [])
                     angular.forEach(field.fields, buildFields, newElement);
                     newElement = workingElement;
                   }
+                }else{
+                  angular.noop();
                 }
 
                 //  Common attributes; radio already applied these...
@@ -323,6 +338,7 @@ angular.module('mm-dynamic-forms', [])
                   }
                 }
 
+
                 //  If there's a label, add it.
                 if (angular.isDefined(field.label)) {
                   //  Some elements have already applied their labels.
@@ -331,36 +347,72 @@ angular.module('mm-dynamic-forms', [])
                   }
                   //  Fieldset elements put their labels in legend child elements.
                   else if (["fieldset"].indexOf(field.type) > -1) {
-                    newElement.prepend(angular.element($document[0].createElement('legend')).html(field.label));
+                    newElement.prepend(angular.element($document[0].createElement('legend')).html($translate.instant(field.label)));
                   }
                   //  Button elements get their labels from their contents.
                   else if (["button", "legend", "reset", "submit"].indexOf(field.type) > -1) {
-                    newElement.html(field.label);
+                    newElement.html($translate.instant(field.label));
+                  }else {
+                    angular.noop();
                   }
-                  //  Everything else should have label element followed by the actual element.
-                  else {
-                    wrapperElem = wrapperElem.append('<label>'+field.label+'</label>');
-                    wrapperElem.append( newElement);
-                  }
+
                 }
-
-                // Arbitrary attributes
+                // Arbitrary attributes are added here
                 angular.forEach(field, function (val, attr) {
-                    if (["label", "type", "model"].indexOf(attr) > -1) {
+                    if (["label", "type", "model", "enclosing-div"].indexOf(attr) > -1) {
 
-                    }else{
+                    }else if(["md-icon"].indexOf(attr) > -1){
+                      newElement = newElement.prepend('<md-icon md-font-icon="'+ val +'"></md-icon>');
+                    }
+                    else if(["md-placeholder"].indexOf(attr) > -1){
+                      newElement.attr(attr, $translate.instant(val));
+                    }
+                    else{
                       //  the attributes need to be updated.
                       newElement.attr(attr, val);
                     }
                   });
 
-                // Add the element to the page
-                    this.append( wrapperElem );
+
+                //  Control the div around the md-button
+                if(field.type === "submit"){
+                  newElement = angular.element("<div></div>").append(newElement);
+                }else {
+                  //  Everything else should have label element followed by the actual element.
+                    wrapperElem = wrapperElem.append("<label translate='"+ field.label +"'></label>");
+                    newElement = wrapperElem.append( newElement);
+                  }
+
+                wrapElement.append( newElement );
                 newElement = null;
+
+            }
+          };
+            //
+            /*
+            * Function to handle the building of the rows of field elements as per config Object
+            * params:templateRows - Object array containing the rows of field elements
+            * id: dummy param - for future usage
+            */
+            buildRows = function (templateRows, id){
+              var templateRowsLength = Object.keys(templateRows).length;
+
+              for(var j=0; j < templateRowsLength; j++){
+                var rowWrapper = angular.element('<div layout-gt-sm="row"></div>');
+                var rowName = Object.keys(templateRows)[j];
+
+                var row = templateRows[rowName];
+                var rowFieldLength = row.length;
+
+                for(var k=0; k < rowFieldLength; k++){
+                  buildFields(rowWrapper, row[k], k);
+                }
+                element.append(rowWrapper);
               }
             };
 
-            angular.forEach(template, buildFields, element);
+            //  call the buildRows function
+            buildRows(template);
 
             //  Determine what tag name to use (ng-form if nested; form if outermost)
             while (!angular.equals(iterElem.parent(), $document) && !angular.equals(iterElem[0], $document[0].documentElement)) {
@@ -376,7 +428,6 @@ angular.module('mm-dynamic-forms', [])
             else {
               newElement = angular.element("<form></form>");
             }
-
             //  Psuedo-transclusion
             angular.forEach(attrs.$attr, function(attName, attIndex) {
               newElement.attr(attName, attrs[attIndex]);

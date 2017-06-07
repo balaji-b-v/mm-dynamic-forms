@@ -104,13 +104,13 @@
   <body ng-controller="AppCtrl" ng-cloak="">
     <p>This demo is an example of the basic functionality of this module.  Have a look
       through the code and get a feel for how everything works.</p>
-    <form mm-dynamic-form class="col-md-8" template-url="form-template.js" ng-model="vm.searchInfo">
+    <form mm-dynamic-form class="col-md-8" template-url="form-template.js" >
 
       <legend>templateUrl= test</legend>
     </form>
-    <form mm-dynamic-form class="col-md-12" template="stdFormTemplate" ng-model="stdFormData">
+    <!-- <form mm-dynamic-form class="col-md-12" template="stdFormTemplate" >
         <legend>template= test</legend>
-      </form>
+      </form> -->
     <div class="col-md-4">
       <div class="fixed col-md-4">
         <pre>stdFormData: {{stdFormData | pretty}}</pre>

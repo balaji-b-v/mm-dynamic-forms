@@ -97,14 +97,8 @@ angular.module('app', ['mm-dynamic-forms'])
           }
         }
       },
-      "checkbox": {
-        "type": "checkbox",
-        "label": "checkbox"
-      },
-      "color": {
-        "type": "color",
-        "label": "color"
-      },
+
+
       "file": {
         "type": "file",
         "label": "file",
@@ -219,19 +213,29 @@ angular.module('app', ['mm-dynamic-forms'])
     };
     $scope.stdFormData = {};
     $scope.vm = {};
-    vm.searchInfo = {};
-    vm.searchInfo.first_name = '';
-    vm.searchInfo.last_name = '';
-    vm.searchInfo.email = '';
-    vm.searchInfo.mobile = '';
-    vm.searchInfo.processor_ref_id = '';
-    vm.searchInfo.user_hash_id = '';
-    vm.searchInfo.status = {
-      "pending" : "Pending",
-      "success": "Success",
-      "failed": "Failed"
-    }
+    $scope.vm.searchInfo = {};
+    // $scope.vm.searchInfo.first_name = '';
+    // $scope.vm.searchInfo.last_name = '';
+    // $scope.vm.searchInfo.email = '';
+    // $scope.vm.searchInfo.mobile = '';
+    // $scope.vm.searchInfo.processor_ref_id = '';
+    // $scope.vm.searchInfo.user_hash_id = '';
+    // $scope.vm.searchInfo.status = {
+    //   "pending" : "Pending",
+    //   "success": "Success",
+    //   "failed": "Failed"
+    // }
     // $scope.vm = vm;
+    /*
+    "checkbox": {
+        "type": "checkbox",
+        "label": "checkbox"
+      },
+       "color": {
+        "type": "color",
+        "label": "color"
+      },
+      */
   }])
   .filter('pretty', function() {
     return function (input) {
