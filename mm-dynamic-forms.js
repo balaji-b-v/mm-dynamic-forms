@@ -1,6 +1,6 @@
 /**
 * mmDynamicForms - Build ngMaterial based Forms in AngularJS From JSON config file
-* @version v0.0.2 - 2017-06-07
+* @version v0.0.3 - 2017-06-08
 * @link https://github.com/balaji-b-v/mm-dynamic-forms
 * @license MIT, http://opensource.org/licenses/MIT
 */
@@ -254,10 +254,10 @@ angular.module('mm-dynamic-forms', [])
                     newElement.attr('ng-options', field.autoOptions);
                   }
                   else if (angular.isDefined(field.options)) {
-                    // This doesnt handle the optSubgroups
-                      newChild = angular.element($document[0].createElement('md-option')).html("{{type}}");
-                      newChild.attr('ng-repeat', "type in " + field.options);
-                      newChild.attr('ng-value', 'type');
+                     // This doesnt handle the optSubgroups
+                      newChild = angular.element($document[0].createElement('md-option')).html(field.options.displayText);
+                      newChild.attr('ng-repeat', field.options.ngRepeat);
+                      newChild.attr('value', field.options.ngValue);
 
                       newElement.append(newChild);
 
@@ -364,7 +364,7 @@ angular.module('mm-dynamic-forms', [])
                     }else if(["md-icon"].indexOf(attr) > -1){
                       newElement = newElement.prepend('<md-icon md-font-icon="'+ val +'"></md-icon>');
                     }
-                    else if(["md-placeholder"].indexOf(attr) > -1){
+                    else if(["md-placeholder", "aria-label"].indexOf(attr) > -1){
                       newElement.attr(attr, $translate.instant(val));
                     }
                     else{

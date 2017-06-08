@@ -1,8 +1,12 @@
 mm-dynamic-forms
 =====================
 
+Build ngMaterial based forms in AngularJS From JSON
 
-Build Forms in AngularJS From Nothing But JSON
+This is a "Work in Progress" :
+currently covers elements - test, number, email, tel, select, submit button
+
+TODO: radio, checkbox, file, image and time-based elements
 
 Uses the MIT License.  See `LICENSE` file for details.
 
