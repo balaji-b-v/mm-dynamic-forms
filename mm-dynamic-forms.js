@@ -1,6 +1,6 @@
 /**
 * mmDynamicForms - Build ngMaterial based Forms in AngularJS From JSON config file
-* @version v0.0.3 - 2017-06-08
+* @version v0.0.4 - 2017-06-09
 * @link https://github.com/balaji-b-v/mm-dynamic-forms
 * @license MIT, http://opensource.org/licenses/MIT
 */
@@ -359,8 +359,8 @@ angular.module('mm-dynamic-forms', [])
                 }
                 // Arbitrary attributes are added here
                 angular.forEach(field, function (val, attr) {
-                    if (["label", "type", "model", "enclosing-div"].indexOf(attr) > -1) {
-
+                    if (["label", "type", "model", "enclosing-div", "empty", "options"].indexOf(attr) > -1) {
+                      angular.noop();
                     }else if(["md-icon"].indexOf(attr) > -1){
                       newElement = newElement.prepend('<md-icon md-font-icon="'+ val +'"></md-icon>');
                     }
