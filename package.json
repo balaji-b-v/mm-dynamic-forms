@@ -1,6 +1,6 @@
 {
   "name": "mm-dynamic-forms",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Customized ngMaterial formly generator",
   "main": "mm-dynamic-forms.js",
   "scripts": {
