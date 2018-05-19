@@ -1,8 +1,9 @@
 /**
 * mmDynamicForms - Build ngMaterial based Forms in AngularJS From JSON config file
-* @version v0.0.4 - 2017-06-09
+* @version v0.0.5 - 2018-05-19
 * @link https://github.com/balaji-b-v/mm-dynamic-forms
 * @license MIT, http://opensource.org/licenses/MIT
+* Added handling for form-name and conditional div wrapper for button/reset elements
 */
 
 /**
@@ -375,8 +376,11 @@ angular.module('mm-dynamic-forms', [])
 
 
                 //  Control the div around the md-button
-                if(field.type === "submit"){
-                  newElement = angular.element("<div></div>").append(newElement);
+                if(field.type === "submit" || field.type === "reset"){
+                  if(field["enclosing-div"] == true){
+                    newElement = angular.element("<div></div>").append(newElement);
+                  }
+                  
                 }else {
                   //  Everything else should have label element followed by the actual element.
                     wrapperElem = wrapperElem.append("<label translate='"+ field.label +"'></label>");
@@ -433,6 +437,8 @@ angular.module('mm-dynamic-forms', [])
               newElement.attr(attName, attrs[attIndex]);
             });
             newElement.attr('model', attrs.ngModel);
+            newElement.attr('name', attrs.formName);
+            newElement.removeAttr('form-name');
             newElement.removeAttr('ng-model');
             angular.forEach(element[0].classList, function(clsName) {
               newElement[0].classList.add(clsName);
