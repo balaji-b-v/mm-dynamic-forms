@@ -1,6 +1,6 @@
 /**
 * mmDynamicForms - Build ngMaterial based Forms in AngularJS From JSON config file
-* @version v0.0.5 - 2018-05-19
+* @version v0.0.6 - 2018-06-20
 * @link https://github.com/balaji-b-v/mm-dynamic-forms
 * @license MIT, http://opensource.org/licenses/MIT
 * Added handling for form-name and conditional div wrapper for button/reset elements
@@ -249,7 +249,7 @@ angular.module('mm-dynamic-forms', [])
                 else if (field.type === 'select') {
                   // Handled to use ngMaterial based HTML tags
                   if (angular.isDefined(field.multiple) && field.multiple !== false) {newElement.attr('multiple', 'multiple');}
-                  if (angular.isDefined(field.empty) && field.empty !== false) {newElement.append(angular.element($document[0].createElement('option')).attr('value', '').html($translate.instant(field.empty)));}
+                  if (angular.isDefined(field.empty) && field.empty !== false) {newElement.append(angular.element($document[0].createElement('md-option')).attr('value', '').html($translate.instant(field.empty)));}
 
                   if (angular.isDefined(field.autoOptions)) {
                     newElement.attr('ng-options', field.autoOptions);
